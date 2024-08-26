@@ -155,7 +155,7 @@ export async function fetchEmployeeById(id) {
   }
 }
 
-export async function updateEmployee(employee){
+export async function updateEmployee(employee) {
   const mutation = `
     mutation($input: EmployeeInput!) {
       updateEmployee(input: $input) {
@@ -192,5 +192,46 @@ export async function updateEmployee(employee){
 
   } catch (error) {
     console.error('Error updating employee:', error);
+  }
+}
+
+export async function deleteEmployee(employee) {
+  const mutation = `
+    mutation deleteEmployee($input: ID!) {
+      deleteEmployee(input: $input)
+    }
+  `;
+
+  try {
+    const response = await fetch(baseUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query: mutation,
+        variables: { input: employee },
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.errors) {
+      console.error('GraphQL errors:', result.errors);
+      throw new Error('Failed to delete employee');
+    }
+
+    if (result.data.deleteEmployee) {
+      await fetchAllEmployees();
+    } else {
+      console.warn('Employee could not be deleted. It may not exist.');
+    }
+
+  } catch (error) {
+    console.error('Error deleting employee:', error);
   }
 }
