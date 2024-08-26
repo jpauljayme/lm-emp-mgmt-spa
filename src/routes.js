@@ -1,8 +1,6 @@
 import page from 'page';
 import { writable } from 'svelte/store';
-
-// Store to keep track of the current page component
-export const currentPage = writable(null);
+import { currentAction, currentEmployeeId, currentPage } from './stores/employeeStore';
 
 // Import Svelte components
 // import Login from './pages/Login.svelte';
@@ -12,12 +10,20 @@ import EmployeeForm from './pages/EmployeeForm.svelte';
 
 // Define routes
 // page('/login', () => currentPage.set(Login));
-page('', () => currentPage.set(Dashboard));
-page('/employeeForm', () => currentPage.set(EmployeeForm));
-// page('/employee/:id', (context) => {
-//   currentPage.set(EmployeeDetail);
-//   // Optionally, use another store for route parameters if needed
-// });
+page('/', () => currentPage.set(Dashboard));
+// page('/employeeForm', () => currentPage.set(EmployeeForm));
+page('/employeeForm', (context) => {
+    const queryParams = new URLSearchParams(context.querystring);
+    const action = queryParams.get('action');
+    const id = queryParams.get('id');
+    
+    console.log(action);
+    
+    currentAction.set(action || 'add');
+    currentEmployeeId.set(id || null);
+    
+    currentPage.set(EmployeeForm);
+});
 
 // Start the router
 page();
