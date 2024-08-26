@@ -1,7 +1,11 @@
 <script>
-    import { addEmployee } from "../stores/employeeStore";
-    import page from "page";
+    import { onMount } from "svelte";
+    import { addEmployee, fetchEmployeeById, updateEmployee } from "../stores/employeeStore";
+    import {currentEmployeeId, currentAction} from '../stores/employeeStore';
 
+    import page from "page";
+    import { get } from "svelte/store";
+    
     let employee = {
         firstName: "",
         lastName: "",
@@ -14,6 +18,19 @@
         contacts: [],
     };
 
+    let action = get(currentAction);
+    let id = get(currentEmployeeId);
+
+    onMount(async () => {
+        if(action === 'edit' && id){
+            try{
+                employee = await fetchEmployeeById(id);
+            }catch(error){
+                console.error('Error fetching employee:', error);
+                alert('Failed to load employee data.');
+            }
+        }
+    });
 
     function addAddress() {
         employee.addresses = [
@@ -39,7 +56,12 @@
 
     async function handleSubmit() {
         console.log(JSON.stringify(employee))
-        await addEmployee(employee);
+        if(action === 'edit'){
+            await updateEmployee(employee);
+        }else{
+            await addEmployee(employee);
+        }
+        
         page("");
     }
 
@@ -49,7 +71,7 @@
 </script>
 
 <div class="container">
-    <h2>Create Employee Form</h2>
+    <h2>{action === 'add' ? 'Create' : 'Update'} Employee Form</h2>
     <form
         class="form__update-employee needs-validation"
         on:submit|preventDefault={handleSubmit}
@@ -249,10 +271,10 @@
         >
         <!-- Submit Button -->
         <div>
-            <button type="submit" class="btn btn-primary">Save Employee</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </div>
         <div>
-            <button class="btn btn-dark" on:click={handleBack}>Back</button>
+            <button type="button" class="btn btn-dark" on:click={handleBack}>Back</button>
         </div>
     </form>
 </div>
