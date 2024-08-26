@@ -1,11 +1,11 @@
-import {writable} from 'svelte/store';
+import { writable } from 'svelte/store';
 
-const baseUrl = 'http://localhost:8081/admin/employees'; 
+const baseUrl = 'http://localhost:8081/graphql';
 
 export const employees = writable([]);
 
-export async function fetchAllEmployees(){
-    const query = `
+export async function fetchAllEmployees() {
+  const query = `
     query {
       getAllEmployees {
         id
@@ -16,6 +16,10 @@ export async function fetchAllEmployees(){
         gender
         maritalStatus
         dateHired
+        primaryAddress
+        primaryContact
+        age
+        tenure
         addresses {
           addressDetails
           isPrimary
@@ -29,19 +33,56 @@ export async function fetchAllEmployees(){
   `;
 
   const response = await fetch(baseUrl, {
-    method: 'GET',
-    headers: {'Content-Type': 'application/json'},
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  
+  if (result.errors) {
+    console.error('GraphQL errors:', result.errors);
+  } else {
+    employees.set(result.data.getAllEmployees); // Assuming employees is a writable store
+  }
+}
+
+export async function addEmployee(input) {
+  const mutation = `
+    mutation($input: EmployeeInput!) {
+      createEmployee(input: $input) {
+        id
+        firstName
+        lastName
+        empPosition
+        birthDate
+        gender
+        maritalStatus
+        dateHired
+        addresses{
+          addressDetails
+          isPrimary
+        }
+        contacts{
+          contactDetails
+          isPrimary
+        }
+      }
+    }
+  `;
+  const response = await fetch(baseUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: mutation, variables: { input } }),
   });
 
   const result = await response.json();
-  employees.set(result);
-}
-
-
-export function setEmployees(newEmployees){
-    employees.set(newEmployees);
-}
-
-export function addEmployee(employee){
-    employees.update(current => [...current, employee]);
+  console.log(result);
+  employees.update((current) => [...current, result.data.createEmployee]);
 }

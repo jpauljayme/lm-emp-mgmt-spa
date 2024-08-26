@@ -1,13 +1,17 @@
 <script>
     import { onMount } from "svelte";
     import { employees, fetchAllEmployees } from "../stores/employeeStore";
+    import page from 'page';
 
-    let employeeList = [];
+    $: employeeList = $employees;
 
     onMount(async () =>{
         await fetchAllEmployees();
-        $: employeeList = $employees;
     });
+
+    function handleAddEmployeeBtn(){
+        page.redirect('/employeeForm')
+    }
 </script>
 
 <div class="grid__wrapper">
@@ -21,12 +25,12 @@
     </header>
     <div class="grid__employees">
         <div>
-            <button type="button" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" on:click={handleAddEmployeeBtn}>
                 Add Employee
             </button>
         </div>
         <div class="table-responsive">
-            <table>
+            <table class="table table-bordered">
                 <thead class="thead-dark">
                     <tr>
                         <th>Name</th>
@@ -42,6 +46,14 @@
                     {#each employeeList as employee (employee.id)}
                         <tr>
                             <td>{employee.firstName} {employee.lastName}</td>
+                            <td>{employee.primaryAddress}</td>
+                            <td>{employee.primaryContact}</td>
+                            <td>{employee.age}</td>
+                            <td>{employee.tenure}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning">Edit</button>
+                                <button class="btn btn-sm btn-danger">Delete</button>
+                            </td>
                         </tr>
                     {/each}
                 </tbody>
@@ -74,5 +86,11 @@
         font-size: 1.5rem;
         font-weight: bold;
         margin: 0;
+    }
+    
+    .grid__employees{
+    grid-area: employees;
+    display:grid;
+    gap: 20px;
     }
 </style>
