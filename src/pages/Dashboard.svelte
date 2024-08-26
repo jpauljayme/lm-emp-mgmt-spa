@@ -1,10 +1,15 @@
 <script>
     import { onMount } from "svelte";
-    import { employees, fetchAllEmployees } from "../stores/employeeStore";
-    import page from 'page';
+    import { deleteEmployee, employees, fetchAllEmployees } from "../stores/employeeStore";
+    import page  from 'page';
+    import { userRole } from "../stores/authStore";
+    import DeleteModal from "../components/DeleteModal.svelte";
 
     $: employeeList = $employees;
-    let isAdmin = true;
+    $: isAdmin = $userRole === 'admin';
+
+    let showModal = false;
+    let employeeToDelete = null;
 
     onMount(async () =>{
         await fetchAllEmployees();
@@ -14,21 +19,33 @@
         page.redirect('/employeeForm?action=add');
     }
 
-    function handleEditOrViewBtn(employee){
-        if(isAdmin){
-            page.redirect(`/employeeForm?action=edit&id=${employee.id}`);
-        }
-        
+    function handleShowEmployeeFormBtn(employeeId){
+        page.redirect(`/employeeForm?action=edit&id=${employeeId}`);        
     }
 
-    function handleDeleteBtn(employeeId){
-        //  TODO: call deleteEmployee from store
+    async function handleDelete(){
+        if(employeeToDelete){
+            await deleteEmployee(employeeToDelete.id);
+            fetchAllEmployees();
+            employeeToDelete = null;
+        }
+    }
+
+    function confirmDelete(employee){
+        showModal = true;
+        employeeToDelete = employee;
+    }
+
+    function closeModal(){
+        showModal = false;
     }
 </script>
 
 <div class="grid__employees">
     <div>
-        <button type="button" class="btn btn-primary" on:click={handleAddEmployeeBtn}>
+        <button type="button" class="btn btn-primary" on:click={handleAddEmployeeBtn} 
+            disabled={!isAdmin}
+        >
             Add Employee
         </button>
     </div>
@@ -54,8 +71,8 @@
                         <td>{employee.age}</td>
                         <td>{employee.tenure}</td>
                         <td>
-                            <button class="btn btn-sm btn-warning" on:click={ () => handleEditOrViewBtn(employee)}>{isAdmin ? 'Edit' : 'View'}</button>
-                            <button class="btn btn-sm btn-danger" disabled={!isAdmin} on:click={ () => handleDeleteBtn(employee.id)}>Delete</button>
+                            <button class="btn btn-sm btn-warning" on:click={ () => handleShowEmployeeFormBtn(employee.id)}>{isAdmin ? 'Edit' : 'View'}</button>
+                            <button class="btn btn-sm btn-danger" disabled={!isAdmin} on:click={ () => confirmDelete(employee)}>Delete</button>
                         </td>
                     </tr>
                 {/each}
@@ -63,11 +80,17 @@
         </table>
     </div>
 </div>
+<DeleteModal
+    bind:show={showModal}
+    employeeName={employeeToDelete ? `${employeeToDelete.firstName} ${employeeToDelete.lastName}` : ''}
+    on:confirm={handleDelete}
+    on:close={closeModal}
+/>
 
 <style>
     .grid__employees{
-    grid-area: employees;
-    display:grid;
-    gap: 20px;
+        display:grid;
+        grid-area: employees;
+        gap: 20px;
     }
 </style>
