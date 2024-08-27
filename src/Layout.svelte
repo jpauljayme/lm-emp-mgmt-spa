@@ -1,10 +1,9 @@
 <script>
     import Footer from "./components/Footer.svelte";
-import Header from "./components/Header.svelte";
-import Login from "./pages/Login.svelte";
-    import { userRole, isAuthenticated, logout } from "./stores/authStore";
+    import Header from "./components/Header.svelte";
+    import Login from "./pages/Login.svelte";
+    import { isAuthenticated } from "./stores/authStore";
     import { currentPage } from "./stores/employeeStore";
-    import page from 'page';
 
     $: isAuth = $isAuthenticated;
 </script>
@@ -31,7 +30,7 @@ import Login from "./pages/Login.svelte";
         gap: 20px;
     }
 
-    main{
+    main {
         padding: 0 100px;
     }
 </style>
