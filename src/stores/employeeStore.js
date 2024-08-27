@@ -3,7 +3,6 @@ import { writable } from 'svelte/store';
 const baseUrl = 'http://localhost:8081/graphql';
 
 export const employees = writable([]);
-export const isAdmin = writable(false);
 
 // Store to keep track of the current action (add or edit)
 export const currentAction = writable('add');

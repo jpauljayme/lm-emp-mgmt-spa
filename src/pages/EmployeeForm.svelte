@@ -32,7 +32,7 @@
             try {
                 employee = await fetchEmployeeById(id);
             } catch (error) {
-                console.error("Error fetching employee:", error);
+                // TODO: Use modal
                 alert("Failed to load employee data.");
             }
         }
@@ -307,8 +307,11 @@
 </div>
 
 <style>
-    form{
-        max-width: 70%;
+    .employee__form__container{
+        max-width: 60%;
         margin: 0 auto;
+        border: 2px outset rgb(30, 59, 117);
+        padding: 20px;
+        border-radius: 20px;
     }
 </style>
