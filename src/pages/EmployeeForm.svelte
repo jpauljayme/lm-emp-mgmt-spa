@@ -2,14 +2,17 @@
     import { onMount } from "svelte";
     import {
         addEmployee,
+        employees,
         fetchEmployeeById,
         updateEmployee,
+        useMockData,
     } from "../stores/employeeStore";
     import { currentEmployeeId, currentAction } from "../stores/employeeStore";
 
     import page from "page";
     import { get } from "svelte/store";
-    import {  userRole } from "../stores/authStore";
+    import { userRole } from "../stores/authStore";
+    import { calculateAge, calculateTenure } from "../mockData";
 
     let employee = {
         firstName: "",
@@ -23,20 +26,79 @@
         contacts: [],
     };
 
-    $: isAdmin = $userRole == 'admin'
+    $: isAdmin = $userRole == "admin";
+    $: curEmployees = $employees;
     let action = get(currentAction);
     let id = get(currentEmployeeId);
 
     onMount(async () => {
         if (action === "edit" && id) {
             try {
-                employee = await fetchEmployeeById(id);
+                if ($useMockData) {
+                    employee = $employees.find(
+                        (employee) => employee.id === id,
+                    );
+                } else {
+                    employee = await fetchEmployeeById(id);
+                }
             } catch (error) {
                 // TODO: Use modal
                 alert("Failed to load employee data.");
             }
         }
     });
+
+    function handleSubmit(employee) {
+        if (action === "edit") {
+            employees.update((current) => {
+                return current.map((emp) => {
+                    if (emp.id === employee.id) {
+                        return {
+                            ...emp,
+                            ...employee,
+                            primaryAddress:
+                                employee.addresses.find(
+                                    (addr) => addr.isPrimary,
+                                )?.addressDetails || "No primary address",
+                            primaryContact:
+                                employee.contacts.find(
+                                    (contact) => contact.isPrimary,
+                                )?.contactDetails || "No primary contact",
+                            age: calculateAge(employee.birthDate),
+                            tenure: calculateTenure(employee.dateHired)
+                        };
+                    }
+                    return emp;
+                });
+            });
+        } else {
+            const newEmployee = {
+                id: ($employees.length + 1).toString(),
+                ...employee,
+                primaryAddress:
+                                employee.addresses.find(
+                                    (addr) => addr.isPrimary,
+                                )?.addressDetails || "No primary address",
+                            primaryContact:
+                                employee.contacts.find(
+                                    (contact) => contact.isPrimary,
+                                )?.contactDetails || "No primary contact",
+                            age: calculateAge(employee.birthDate),
+                            tenure: calculateTenure(employee.dateHired),
+            };
+            employees.update((current) => [...current, newEmployee]);
+        }
+        page("");
+    }
+
+    async function handleSubmitAsync(employee) {
+        if (action === "edit") {
+            await updateEmployee(employee);
+        } else {
+            await addEmployee(employee);
+        }
+        page("");
+    }
 
     function addAddress() {
         employee.addresses = [
@@ -60,17 +122,6 @@
         employee.contacts = employee.contacts.filter((_, i) => i !== index);
     }
 
-    async function handleSubmit() {
-        console.log(JSON.stringify(employee));
-        if (action === "edit") {
-            await updateEmployee(employee);
-        } else {
-            await addEmployee(employee);
-        }
-
-        page("");
-    }
-
     function handleBack() {
         page("");
     }
@@ -80,9 +131,10 @@
     <h4>{action === "add" ? "Create" : "Update"} Employee Form</h4>
     <form
         class="form__update-employee needs-validation"
-        on:submit|preventDefault={handleSubmit}
+        on:submit|preventDefault={$useMockData
+            ? handleSubmit(employee)
+            : handleSubmitAsync(employee)}
     >
-        <!-- <input th:field="*{id}" type="hidden"> -->
         <div class="row mb-5">
             <div class="col-md-6">
                 <label for="firstName">First Name</label>
@@ -235,8 +287,7 @@
                         type="button"
                         class="btn btn-sm btn-danger"
                         on:click={() => removeAddress(index)}
-                        disabled={!isAdmin}
-                        >Remove</button
+                        disabled={!isAdmin}>Remove</button
                     >
                 </div>
             </div>
@@ -246,14 +297,14 @@
             class="btn btn-sm btn-secondary mb-3"
             on:click={addAddress}
             disabled={!isAdmin}
-            >Add Address 
+            >Add Address
         </button>
 
         <!-- Contacts Section -->
         <h3>Contacts</h3>
         {#if employee.contacts.length === 0}
-        <p>No contact information added yet.</p>
-    {/if}
+            <p>No contact information added yet.</p>
+        {/if}
         {#each employee.contacts as contact, index}
             <div class="row mb-3">
                 <div class="col-md-8">
@@ -296,18 +347,25 @@
             type="button"
             class="btn btn-sm btn-secondary mb-3"
             on:click={addContact}
-            disabled={!isAdmin}
-            >Add Contact</button
+            disabled={!isAdmin}>Add Contact</button
         >
-        <div class='employee__form__button__container text-center'>
-            <button type="submit" class="btn btn-sm btn-primary" disabled={!isAdmin}>Submit</button>
-            <button type="button" class="btn btn-sm btn-dark" on:click={handleBack}>Back</button>
+        <div class="employee__form__button__container text-center">
+            <button
+                type="submit"
+                class="btn btn-sm btn-primary"
+                disabled={!isAdmin}>Submit</button
+            >
+            <button
+                type="button"
+                class="btn btn-sm btn-dark"
+                on:click={handleBack}>Back</button
+            >
         </div>
     </form>
 </div>
 
 <style>
-    .employee__form__container{
+    .employee__form__container {
         max-width: 60%;
         margin: 0 auto;
         border: 2px outset rgb(30, 59, 117);

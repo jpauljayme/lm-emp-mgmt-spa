@@ -8,12 +8,12 @@
 
     function handleConfirm() {
         dispatch("confirm"); // Dispatch a confirm event when the user clicks 'Yes'
-        handleClose(); // Close the modal
+        handleClose();
     }
 
     function handleClose() {
-        dispatch("close"); // Dispatch a close event when the modal is closed
-        show = false; // Hide the modal
+        dispatch("close");
+        show = false;
     }
 </script>
 

@@ -1,9 +1,11 @@
 <script>
     import { onMount } from "svelte";
     import {
-        deleteEmployee,
-        employees,
+    employees,
         fetchAllEmployees,
+        initializeMockEmployees,
+        // initializeEmployees,
+        useMockData,
     } from "../stores/employeeStore";
     import page from "page";
     import { userRole } from "../stores/authStore";
@@ -12,11 +14,14 @@
 
     $: isAdmin = $userRole === "admin";
 
-    
-    let employeeToDelete = null;
-
     onMount(async () => {
-        await fetchAllEmployees();
+        if(!$useMockData){
+            await fetchAllEmployees();
+        }else{
+            if ($employees.length === 0) {
+                initializeMockEmployees();
+            }
+        }
     });
 
     function handleAddEmployee() {

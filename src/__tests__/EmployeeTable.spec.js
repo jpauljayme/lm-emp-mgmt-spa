@@ -17,7 +17,6 @@ test('render a list of employee data correctly', () => {
     const { container } = render(EmployeeTable);
     const rows = container.querySelectorAll('tbody tr')
 
-    console.log(rows.forEach(e => console.log(e.textContent)));
     expect(rows.length).toBe(mockEmployees.length);
 });
 

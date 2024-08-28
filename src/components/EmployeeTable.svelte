@@ -4,27 +4,40 @@
         deleteEmployee,
         employees,
         fetchAllEmployees,
+        useMockData,
     } from "../stores/employeeStore";
     import EmployeeRow from "./EmployeeRow.svelte";
     import DeleteModal from "./DeleteModal.svelte";
-    
+
     $: employeeList = $employees;
+
     let showModal = false;
     let employeeToDelete = null;
+
     function handleShowEmployeeForm(event) {
         const employeeIdToShow = event.detail;
         page.redirect(`/employeeForm?action=edit&id=${employeeIdToShow}`);
     }
 
-    async function handleDelete(event) {
-        employeeToDelete = event.detail;
-        
+    function handleShowDeleteModal(employee) {
+        employeeToDelete = employee;
+        showModal = true;
+    }
+
+    async function handleDelete() {
         if (employeeToDelete) {
-            showModal = true;
-            await deleteEmployee(employeeToDelete.id);
-            fetchAllEmployees();
-            employeeToDelete = null;
+            if ($useMockData) {
+                employees.update((current) =>
+                    current.filter((emp) => emp.id !== employeeToDelete.id),
+                );
+            } else {
+                await deleteEmployee(employeeToDelete.id);
+                showModal = true;
+                fetchAllEmployees();
+                employeeToDelete = null;
+            }
         }
+        showModal = false;
     }
 
     function closeModal() {
@@ -49,7 +62,7 @@
                 <EmployeeRow
                     {employee}
                     on:show={handleShowEmployeeForm}
-                    on:delete={handleDelete}
+                    on:delete={() => handleShowDeleteModal(employee)}
                 />
             {/each}
         </tbody>
