@@ -9,7 +9,7 @@ Technologies used
 1. Clone this repository to your local machine using the following command:
 
 `` 
-git clone https://github.com/jpauljayme/lm-emp-mgmt-spa
+git clone git@github.com:jpauljayme/lm-emp-mgmt-spa.git
 ``
 
 2. ``npm install``
