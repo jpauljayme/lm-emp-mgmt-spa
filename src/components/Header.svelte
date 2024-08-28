@@ -27,6 +27,7 @@
         align-items: flex-end;
         padding: 0 100px;
         border-bottom: 1px solid #dee2e6;
+        background-color: rgb(30, 59, 117);
     }
 
     .header__title h1 {

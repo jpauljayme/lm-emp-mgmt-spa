@@ -193,7 +193,7 @@ export async function updateEmployee(employee) {
   }
 }
 
-export async function deleteEmployee(employee) {
+export async function deleteEmployee(employeeId) {
   const mutation = `
     mutation deleteEmployee($input: ID!) {
       deleteEmployee(input: $input)
@@ -208,7 +208,7 @@ export async function deleteEmployee(employee) {
       },
       body: JSON.stringify({
         query: mutation,
-        variables: { input: employee },
+        variables: { input: employeeId },
       })
     });
 

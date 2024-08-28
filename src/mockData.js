@@ -2,14 +2,14 @@
 import { faker } from '@faker-js/faker';
 
 // Helper function to compute age from birthDate
-function calculateAge(birthDate) {
+export function calculateAge(birthDate) {
   const ageDifMs = Date.now() - new Date(birthDate).getTime();
   const ageDate = new Date(ageDifMs); // milliseconds from epoch
   return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
 
 // Helper function to compute tenure from dateHired
-function calculateTenure(dateHired) {
+export function calculateTenure(dateHired) {
   const now = new Date();
   const hireDate = new Date(dateHired);
   const tenureYears = now.getFullYear() - hireDate.getFullYear();
@@ -78,4 +78,4 @@ function generateMockEmployees(count = 10) {
 }
 
 // Export mock data for testing purposes
-export const mockEmployees = generateMockEmployees(10); // Explicitly generate 10 employees
+export const mockEmployees = generateMockEmployees(5); // Explicitly generate 10 employees
