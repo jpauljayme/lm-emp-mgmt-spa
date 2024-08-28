@@ -32,7 +32,7 @@
             try {
                 employee = await fetchEmployeeById(id);
             } catch (error) {
-                console.error("Error fetching employee:", error);
+                // TODO: Use modal
                 alert("Failed to load employee data.");
             }
         }
@@ -202,7 +202,7 @@
         <!-- Addresses Section -->
         <h3>Addresses</h3>
         {#if employee.addresses.length === 0}
-            <p>No addresses added yet.</p>
+            <p>No address information added yet.</p>
         {/if}
         {#each employee.addresses as address, index}
             <div class="row mb-3">
@@ -252,7 +252,7 @@
         <!-- Contacts Section -->
         <h3>Contacts</h3>
         {#if employee.contacts.length === 0}
-        <p>No addresses added yet.</p>
+        <p>No contact information added yet.</p>
     {/if}
         {#each employee.contacts as contact, index}
             <div class="row mb-3">
@@ -307,8 +307,11 @@
 </div>
 
 <style>
-    form{
-        max-width: 70%;
+    .employee__form__container{
+        max-width: 60%;
         margin: 0 auto;
+        border: 2px outset rgb(30, 59, 117);
+        padding: 20px;
+        border-radius: 20px;
     }
 </style>
