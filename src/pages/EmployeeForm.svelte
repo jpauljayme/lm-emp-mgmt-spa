@@ -202,7 +202,7 @@
         <!-- Addresses Section -->
         <h3>Addresses</h3>
         {#if employee.addresses.length === 0}
-            <p>No addresses added yet.</p>
+            <p>No address information added yet.</p>
         {/if}
         {#each employee.addresses as address, index}
             <div class="row mb-3">
@@ -252,7 +252,7 @@
         <!-- Contacts Section -->
         <h3>Contacts</h3>
         {#if employee.contacts.length === 0}
-        <p>No addresses added yet.</p>
+        <p>No contact information added yet.</p>
     {/if}
         {#each employee.contacts as contact, index}
             <div class="row mb-3">
