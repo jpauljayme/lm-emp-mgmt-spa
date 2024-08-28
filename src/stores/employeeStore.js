@@ -15,12 +15,13 @@ export const currentEmployeeId = writable(null);
 export const currentPage = writable(null);
 
 // Configuration flag to determine if we use mock data or fetch from backend
-export const useMockData = writable(false);
+export const useMockData = writable(true);
+
+export function initializeMockEmployees(){
+  employees.set(mockEmployees);
+}
 
 export async function fetchAllEmployees() {
-  if (get(useMockData)) {
-    employees.set(mockEmployees);
-  } else {
     const query = `
     query {
       getAllEmployees {
@@ -67,7 +68,6 @@ export async function fetchAllEmployees() {
     } else {
       employees.set(result.data.getAllEmployees); // Assuming employees is a writable store
     }
-  }
 }
 
 export async function addEmployee(input) {

@@ -1,7 +1,10 @@
 <script>
     import { onMount } from "svelte";
     import {
+    employees,
         fetchAllEmployees,
+        initializeMockEmployees,
+        // initializeEmployees,
         useMockData,
     } from "../stores/employeeStore";
     import page from "page";
@@ -14,6 +17,10 @@
     onMount(async () => {
         if(!$useMockData){
             await fetchAllEmployees();
+        }else{
+            if ($employees.length === 0) {
+                initializeMockEmployees();
+            }
         }
     });
 

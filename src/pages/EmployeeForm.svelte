@@ -27,6 +27,7 @@
     };
 
     $: isAdmin = $userRole == "admin";
+    $: curEmployees = $employees;
     let action = get(currentAction);
     let id = get(currentEmployeeId);
 
@@ -64,7 +65,7 @@
                                     (contact) => contact.isPrimary,
                                 )?.contactDetails || "No primary contact",
                             age: calculateAge(employee.birthDate),
-                            tenure: calculateTenure(employee.dateHired),
+                            tenure: calculateTenure(employee.dateHired)
                         };
                     }
                     return emp;
@@ -74,8 +75,17 @@
             const newEmployee = {
                 id: ($employees.length + 1).toString(),
                 ...employee,
+                primaryAddress:
+                                employee.addresses.find(
+                                    (addr) => addr.isPrimary,
+                                )?.addressDetails || "No primary address",
+                            primaryContact:
+                                employee.contacts.find(
+                                    (contact) => contact.isPrimary,
+                                )?.contactDetails || "No primary contact",
+                            age: calculateAge(employee.birthDate),
+                            tenure: calculateTenure(employee.dateHired),
             };
-
             employees.update((current) => [...current, newEmployee]);
         }
         page("");

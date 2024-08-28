@@ -9,6 +9,8 @@
     import EmployeeRow from "./EmployeeRow.svelte";
     import DeleteModal from "./DeleteModal.svelte";
 
+    $: employeeList = $employees;
+
     let showModal = false;
     let employeeToDelete = null;
 
@@ -18,7 +20,7 @@
     }
 
     function handleShowDeleteModal(employee) {
-        employeeToDelete = employee; // Correctly set the employee to be deleted
+        employeeToDelete = employee;
         showModal = true;
     }
 
@@ -56,7 +58,7 @@
             </tr>
         </thead>
         <tbody>
-            {#each $employees as employee (employee.id)}
+            {#each employeeList as employee (employee.id)}
                 <EmployeeRow
                     {employee}
                     on:show={handleShowEmployeeForm}
