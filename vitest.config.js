@@ -9,5 +9,5 @@ export default defineConfig({
     setupFiles: ['./vitest-setup.js',
       './src/__tests__/vitest-mock-setup.js'],
       
-  },
+  }
 })
