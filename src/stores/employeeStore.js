@@ -10,7 +10,6 @@ export const currentAction = writable('add');
 // Store to keep track of the employee ID for editing
 export const currentEmployeeId = writable(null);
 
-
 // Existing store for the current page
 export const currentPage = writable(null);
 

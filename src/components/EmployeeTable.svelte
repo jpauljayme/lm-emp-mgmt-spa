@@ -1,6 +1,4 @@
 <script>
-    import { createEventDispatcher } from "svelte";
-    import Button from "./Button.svelte";
     import page from "page";
     import {
         deleteEmployee,
@@ -9,26 +7,20 @@
     } from "../stores/employeeStore";
     import EmployeeRow from "./EmployeeRow.svelte";
     import DeleteModal from "./DeleteModal.svelte";
-
-    const dispatch = createEventDispatcher();
-
+    
     $: employeeList = $employees;
     let showModal = false;
     let employeeToDelete = null;
-
     function handleShowEmployeeForm(event) {
         const employeeIdToShow = event.detail;
-        console.log(employeeIdToShow);
-        console.log('at EmployeeTable :: handleShowEmployeeForm with id' + employeeIdToShow);
         page.redirect(`/employeeForm?action=edit&id=${employeeIdToShow}`);
     }
 
     async function handleDelete(event) {
-        showModal = true;
         employeeToDelete = event.detail;
-        console.log(event.detail);
-
+        
         if (employeeToDelete) {
+            showModal = true;
             await deleteEmployee(employeeToDelete.id);
             fetchAllEmployees();
             employeeToDelete = null;
